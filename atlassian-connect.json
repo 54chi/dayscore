@@ -28,13 +28,41 @@
     "configurable": {
       "url": "{{localBaseUrl}}/config"
     },
-    "webhook": {
+    "webhook": [{
+    		"url": "{{localBaseUrl}}/echo-webhook",
+    		"event": "room_message",
+    		"pattern": "^/echo",
+    		"name": "Echo",
+    		"authentication": "jwt"
+  		},
+      {
+        "url": "{{localBaseUrl}}/dayscore",
+    		"event": "room_message",
+    		"pattern": "dayscore",
+    		"name": "DayScore",
+    		"authentication": "jwt"
+      },
+      {
+    		"url": "{{localBaseUrl}}/greeting",
+    		"event": "room_enter",
+    		"name": "Greeting",
+    		"authentication": "jwt"
+  		},
+      {
       "url": "{{localBaseUrl}}/webhook",
       "pattern": "^/hello",
       "event": "room_message",
       "name": "Hello!",
       "authentication": "jwt"
-    },
+      },
+      {
+        "url": "{{localBaseUrl}}/send_notification",
+        "pattern": "^/send",
+        "event": "room_message",
+        "name": "Notify",
+        "authentication": "jwt"
+      }
+    ],
     "glance": [
       {
         "name": {
