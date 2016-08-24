@@ -1,12 +1,13 @@
 {
   "development": {
-    "localBaseUrl": "https://a9b687d8.ngrok.io",
+    "localBaseUrl": "http://2a2727ae.ngrok.io",
 
     "usePublicKey": false,
     "watch": false,
 
     "port": 3000,
 
+    "mongodb_uri": "mongodb://SHP:password@ds013946.mlab.com:13946/shpdb",
     "maxTokenAge": 86400,
 
     "store": {

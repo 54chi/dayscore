@@ -21,6 +21,12 @@ var http = require('http');
 var path = require('path');
 var os = require('os');
 
+var mongodb = require('mongodb');
+//var ObjectID = mongodb.ObjectID;
+var db;
+
+
+
 // Let's use Redis to store our data
 ac.store.register('redis', require('atlassian-connect-express-redis'));
 
@@ -38,6 +44,10 @@ var addon = ac(app);
 var port = addon.config.port();
 // Declares the environment to use in `config.js`
 var devEnv = app.get('env') == 'development';
+
+
+var mongodb_uri=addon.config.mongodb_uri();
+console.log("MongoDB: "+mongodb_uri);
 
 // Load the HipChat AC compat layer
 var hipchat = require('atlassian-connect-express-hipchat')(addon, app);
@@ -70,13 +80,28 @@ app.use(express.static(staticDir));
 // Show nicer errors when in dev mode
 if (devEnv) app.use(errorHandler());
 
-// Wire up your routes using the express and `atlassian-connect-express` objects
-routes(app, addon);
+// Connect to the database before starting the application server.
+mongodb.MongoClient.connect(mongodb_uri, function (err, database) {
+//SHP/password
+  if (err) {
+    console.log(err);
+    process.exit(1);
+  }
 
-// Boot the damn thing
-http.createServer(app).listen(port, function(){
-  console.log()
-  console.log('Add-on server running at '+ (addon.config.localBaseUrl()||('http://' + (os.hostname()) + ':' + port)));
-  // Enables auto registration/de-registration of add-ons into a host in dev mode
-  if (devEnv) addon.register();
+  // Save database object from the callback for reuse.
+  db = database;
+  console.log("Database connection ready");
+
+  // Wire up your routes using the express and `atlassian-connect-express` objects
+  routes(app, addon, db);
+
+  // Initialize the app.
+  // Boot the damn thing
+  http.createServer(app).listen(port, function(){
+    console.log()
+    console.log('Add-on server running at '+ (addon.config.localBaseUrl()||('http://' + (os.hostname()) + ':' + port)));
+    // Enables auto registration/de-registration of add-ons into a host in dev mode
+    if (devEnv) addon.register();
+  });
+
 });
