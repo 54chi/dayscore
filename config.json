@@ -1,6 +1,6 @@
 {
   "development": {
-    "localBaseUrl": "http://2a2727ae.ngrok.io",
+    "localBaseUrl": "https://f044a995.ngrok.io",
 
     "usePublicKey": false,
     "watch": false,

@@ -3,8 +3,10 @@ var cors = require('cors');
 var uuid = require('uuid');
 var url = require('url');
 var ObjectId = require('mongodb').ObjectID;
+var RSVP = require('rsvp');
 
 var debug=true;
+var SHP_COLLECTION = "scores";
 
 module.exports = function (app, addon, db) {
   var hipchat = require('../lib/hipchat')(addon);
@@ -42,25 +44,48 @@ module.exports = function (app, addon, db) {
   );
 
   // sidebar glance
+
   app.get('/glance',
     cors(),
     addon.authenticate(),
     function (req, res) {
-      res.json({
-        "label": {
-          "type": "html",
-          "value": "Shiny Happy People"
-        },
-
-        "status": {
-          "type": "lozenge",
-          "value": {
-            "label": "4.1",
-            "type": "success"
+      console.log("getting glance data...");
+      return new RSVP.Promise(function (resolve, reject) {
+        var payload = {
+          "label": {
+            "type": "html",
+            "value": "Dayscore"
           }
-        }
+        };
+        db.collection(SHP_COLLECTION).find({roomID:req.identity.roomId}).toArray(function(err, docs){
+          if (err) resolve(err.message)
+          else {
+            var scoreTot=0;
+            docs.forEach(function(doc){
+                scoreTot+=doc.score|0;
+              }
+            )
+            dayscore=Math.round(scoreTot/docs.length*100)/100;
+            gType=(dayscore>3)?"success":(dayscore>2)?"current":"error";
+            payload["status"] = {
+              "type": "lozenge",
+              "value": {
+                "label": String(dayscore),
+                "type": gType
+              }
+            };
+            resolve(payload);
+          }
+        })
+
+      }).then(function (data) {
+        console.log("Data is:"+ JSON.stringify(data))
+        res.header("Access-Control-Allow-Origin", "*");
+        res.send(data);
+      }, function(error) {
+        res.send();
       });
-    }
+      }
     );
 
   // This is an example end-point that you can POST to to update the glance info
@@ -110,7 +135,7 @@ module.exports = function (app, addon, db) {
     );
 
 /************ WEBHHOOKS ***************/
-
+/*
   app.post('/greeting',
     addon.authenticate(),
     function (req, res) {
@@ -121,7 +146,7 @@ module.exports = function (app, addon, db) {
         });
     }
   );
-
+*/
 
 
   // Sample endpoint to send a card notification back into the chat room
@@ -164,7 +189,6 @@ module.exports = function (app, addon, db) {
   app.post('/dayscore',
       addon.authenticate(), //JWT validation
       function(req, res) {
-        var SHP_COLLECTION = "scores";
         var processedMessage={}; //operation, message
 
 /*
@@ -224,7 +248,7 @@ module.exports = function (app, addon, db) {
           var regExpReport=/report(.*)/
           //  var regExpDate=//
 
-          var defaultMessage="I have no idea what you are trying to do :p"
+          var defaultMessage="I have no idea what you are trying to do. Try \"dayscore help\" for a list of commands you can try."
 
           var arr=message.match(regExpDS);
           var parsedMessage = arr[1].trim()

@@ -1,6 +1,6 @@
 {
   "key": "shiny-happy-people-add-on",
-  "name": "Shiny Happy People",
+  "name": "Dayscore",
   "description": "Increase your project happiness!!",
   "vendor": {
     "name": "54chi",
@@ -66,11 +66,11 @@
     "glance": [
       {
         "name": {
-          "value": "Hello!"
+          "value": "Dayscore"
         },
         "queryUrl": "{{localBaseUrl}}/glance",
-        "key": "sample.glance",
-        "target": "sample.sidebar",
+        "key": "dayscore-glance",
+        "target": "dayscore-sidebar",
         "icon": {
           "url": "{{localBaseUrl}}/img/logo.png",
           "url@2x": "{{localBaseUrl}}/img/logo.png"
@@ -79,7 +79,7 @@
     ],
     "webPanel": [
       {
-        "key": "sample.sidebar",
+        "key": "dayscore-sidebar",
         "name": {
           "value": "Hello Sidebar!"
         },
