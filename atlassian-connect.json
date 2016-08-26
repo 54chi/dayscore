@@ -1,7 +1,7 @@
 {
   "key": "shiny-happy-people-add-on",
   "name": "Dayscore",
-  "description": "Increase your project happiness!!",
+  "description": "Track your project happiness!!",
   "vendor": {
     "name": "54chi",
     "url": "https://www.54chi.com"
@@ -42,12 +42,6 @@
     		"name": "DayScore",
     		"authentication": "jwt"
       },
-      {
-    		"url": "{{localBaseUrl}}/greeting",
-    		"event": "room_enter",
-    		"name": "Greeting",
-    		"authentication": "jwt"
-  		},
       {
       "url": "{{localBaseUrl}}/webhook",
       "pattern": "^/hello",

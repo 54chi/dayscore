@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="acpt" content="{{signed_request}}">
+
     <title>{{title}}</title>
 
     <!-- Atlassian User Interface CSS -->
@@ -20,9 +22,16 @@
     <script src="//www.hipchat.com/atlassian-connect/all.js"></script>
 
     <!-- Add-on Javascript functions -->
-    <script src="/js/addon.js"></script>
+    <!--script src="/js/addon.js"></script-->
   </head>
   <body>
-    {{{body}}}
+    <section id="content" role="main" class="ac-content">
+      {{{body}}}
+    </section>
+    <script>
+      var ACPT = '{{signed_request}}';
+    </script>
+
+    <script src="{{furl '/js/addon.js'}}"></script>
   </body>
 </html>

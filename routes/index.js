@@ -186,6 +186,31 @@ module.exports = function (app, addon, db) {
       }
   );
 
+
+  app.get('/dayscore_data',
+    cors(),
+    addon.authenticate(), //JWT validation
+    function(req, res) {
+      console.log("get ALL dayscore data for the room");
+      return new RSVP.Promise(function (resolve, reject) {
+        db.collection(SHP_COLLECTION).find({roomID:req.identity.roomId}).sort({"_id":-1}).toArray(function(err, docs) {
+          if (err) reject(err.message)
+          else {
+            console.log("I FOUND: " + docs.length + "docs")
+            resolve(docs);
+          }
+        })
+      }).then(function (data) {
+        console.log("Dayscore data for room:"+ JSON.stringify(data))
+        res.send(data);
+      },function(error) {
+        console.log('sending error!');
+        res.status(500).send(error);
+      });
+    }
+  );
+
+
   app.post('/dayscore',
       addon.authenticate(), //JWT validation
       function(req, res) {
@@ -248,7 +273,7 @@ module.exports = function (app, addon, db) {
           var regExpReport=/report(.*)/
           //  var regExpDate=//
 
-          var defaultMessage="I have no idea what you are trying to do. Try \"dayscore help\" for a list of commands you can try."
+          var defaultMessage="I don't know what you are trying to do. Try \"dayscore help\" for a list of commands you can try."
 
           var arr=message.match(regExpDS);
           var parsedMessage = arr[1].trim()
@@ -289,7 +314,7 @@ module.exports = function (app, addon, db) {
                       if (err) reject(err.message)
                       else {
                         //res.status(201).json(doc.ops[0]);
-                        processedMessage.message="Thanks! Your score have been received";
+                        processedMessage.message="Thank you! Your score have been received";
                         console.log("created: "+ doc);
                         resolve(processedMessage);
                       }
@@ -427,99 +452,3 @@ module.exports = function (app, addon, db) {
   });
 
 };
-
-/*
-var app = express();
-app.use(express.static(__dirname + "/public"));
-app.use(bodyParser.json());
-
-// Create a database variable outside of the database connection callback to reuse the connection pool in your app.
-var db;
-
-// Connect to the database before starting the application server.
-mongodb.MongoClient.connect(process.env.MONGODB_URI, function (err, database) {
-  if (err) {
-    console.log(err);
-    process.exit(1);
-  }
-
-  // Save database object from the callback for reuse.
-  db = database;
-  console.log("Database connection ready");
-
-  // Initialize the app.
-  var server = app.listen(process.env.PORT || 8080, function () {
-    var port = server.address().port;
-    console.log("App now running on port", port);
-  });
-});
-
-// CONTACTS API ROUTES BELOW
-
-// Generic error handler used by all endpoints.
-function handleError(res, reason, message, code) {
-  console.log("ERROR: " + reason);
-  res.status(code || 500).json({"error": message});
-}
-
-
-app.get("/contacts", function(req, res) {
-  db.collection(CONTACTS_COLLECTION).find({}).toArray(function(err, docs) {
-    if (err) {
-      handleError(res, err.message, "Failed to get contacts.");
-    } else {
-      res.status(200).json(docs);
-    }
-  });
-});
-
-app.post("/contacts", function(req, res) {
-  var newContact = req.body;
-  newContact.createDate = new Date();
-
-  if (!(req.body.firstName || req.body.lastName)) {
-    handleError(res, "Invalid user input", "Must provide a first or last name.", 400);
-  }
-
-  db.collection(CONTACTS_COLLECTION).insertOne(newContact, function(err, doc) {
-    if (err) {
-      handleError(res, err.message, "Failed to create new contact.");
-    } else {
-      res.status(201).json(doc.ops[0]);
-    }
-  });
-});
-
-app.get("/contacts/:id", function(req, res) {
-  db.collection(CONTACTS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
-    if (err) {
-      handleError(res, err.message, "Failed to get contact");
-    } else {
-      res.status(200).json(doc);
-    }
-  });
-});
-
-app.put("/contacts/:id", function(req, res) {
-  var updateDoc = req.body;
-  delete updateDoc._id;
-
-  db.collection(CONTACTS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
-    if (err) {
-      handleError(res, err.message, "Failed to update contact");
-    } else {
-      res.status(204).end();
-    }
-  });
-});
-
-app.delete("/contacts/:id", function(req, res) {
-  db.collection(CONTACTS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
-    if (err) {
-      handleError(res, err.message, "Failed to delete contact");
-    } else {
-      res.status(204).end();
-    }
-  });
-});
-*/
