@@ -18,7 +18,8 @@
   "production": {
     "usePublicKey": false,
     "port": "$PORT",
-    "localBaseUrl": "https://your-subdomain.herokuapp.com",
+    "mongodb_uri": "$MONGODB",
+    "localBaseUrl": "https://dayscore01.herokuapp.com",
     "store": {
       "adapter": "redis",
       "url": "$REDIS_URL"

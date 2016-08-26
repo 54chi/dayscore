@@ -25,9 +25,6 @@
       "allowGlobal": false,
       "callbackUrl": "{{localBaseUrl}}/installable"
     },
-    "configurable": {
-      "url": "{{localBaseUrl}}/config"
-    },
     "webhook": [{
     		"url": "{{localBaseUrl}}/echo-webhook",
     		"event": "room_message",
